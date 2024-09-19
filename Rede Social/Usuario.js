@@ -8,13 +8,21 @@ class Usuario{
     #amigos;
 
     constructor(nome, email, senha){
-        this.id = idBase + 1;
+        this.id = Usuario.idBase + 1;
         this.#nome = nome;
         this.#email = email; 
         this.#senha = senha;
         this.#seguidores = 0;
         this.#amigos = [];
-        idBase++;
+        Usuario.idBase++;
+    }
+
+    get email(){
+        return this.#email;
+    }
+    
+    get nome(){
+        return this.#nome;
     }
 
     fazerLogin(email, senha){
@@ -23,7 +31,7 @@ class Usuario{
             message : ''
         };
 
-        if(email !== this.email){
+        if(email !== this.#email){
             result.succes = false,
             result.message += 'Email incorreto!'
         }

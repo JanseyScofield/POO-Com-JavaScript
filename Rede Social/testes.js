@@ -1,4 +1,4 @@
-const Usuario = require("./Usuario")
+const RedeSocial = require("./RedeSocial");
 
-const usuario1 = new Usuario("Jansey", "janscofield10@gmail.com","123");
-console.log(usuario1.id);
+const redeSocial = new RedeSocial;
+redeSocial.paginaInicial();
