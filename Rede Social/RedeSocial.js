@@ -3,13 +3,11 @@ const readline = require('readline-sync');
 
 class RedeSocial{
     static listaUsuarios = [];
-    static sair = false; 
     
     paginaInicial(){
         console.log("Bem vindo(a) a Rede Social!");
         let continuar = false;
         let usuario;
-        let resultado;
         let opcao;
 
         while(!continuar){
@@ -17,50 +15,54 @@ class RedeSocial{
             
             switch(opcao){
                 case "1" :
-                    resultado = this.#cadastrarUsuario();
-                    usuario = resultado.usuario;
+                    usuario = this.#cadastrarUsuario();
                     break;
                 case "2":
-                    resultado = this.#fazerLogin();
-                    continuar = resultado.sucess;
-                    usuario = resultado.usuario;
+                    usuario = this.#fazerLogin();
+                    if(usuario !== null)
+                        this.#navegacao(usuario);                
                     break;
                 case "3":
                     continuar = true;
-                    RedeSocial.sair = true;
                     console.log("Obrigado! Volte sempre!");
                     break;
                 default:
                     console.log("Opção inválida! Digite novamente.");
             }
-        }
-
-        // if(!RedeSocial.sair)
-        //     this.#navegacao(usuario);
+        }           
     }
 
-    // #navegacao(usuario){
-    //     let opcaoNav;
-    //     let continuar = false;
+    #navegacao(usuario){
+        let opcaoNav;
+        let continuar = false;
+        while(!continuar){
+           opcaoNav = readline.question("O que deseja fazer?\n1 - Visualizar seu perfil\n2 - Adicionar amigo\n3 - Remover amigo\n4 - Seguir Pessoa\n5 - Alterar e-mail\n6 - Sair da conta\n");
 
-    //     while(!continuar){
-    //        opcaoNav = readline.question("O que deseja fazer?\n1 - Adicionar amigo\n2 - Remover amigo\n3 - Seguir\n4 - Seguir Pessoa\n5 - Alterar e-mail\n6 - Sair da conta\n");
+           switch(opcaoNav){
+            case "1" :
+                usuario.mostrarDados();
+                break;
+            case "2":
+                this.#adicionarAmigo(usuario);
+                break;
+            case "3":
+               this.#removerAmigo(usuario);
+               break;
+            case "4":
+                this.#seguirPessoa();
+                break;
+            case "5":
+                this.#trocarEmail(usuario);
+                break;
+            case "6":
+                continuar = true;
+                break;
+            default:
+                console.log("Opção inválida! Digite novamente.");
+        }
 
-    //        switch(opcaoNav){
-    //         case "1" :
-    //             resultado = this.#cadastrarUsuario();
-    //             break;
-    //         case "2":
-    //             break;
-    //         case "3":
-    //             continuar = true;
-    //             RedeSocial.sair = true;
-    //         default:
-    //             console.log("Opção inválida! Digite novamente.");
-    //     }
-
-    //     } 
-    // }
+        } 
+    }
 
     #procurarUsuario(parametro, paramentro2){
         let iCont;
@@ -76,7 +78,7 @@ class RedeSocial{
     #cadastrarUsuario(){
         const nome = readline.question("Digite seu nome: ");
         const email = readline.question("Digite seu email: ");
-
+        let result;
         const usuarioExistente = this.#procurarUsuario('email', email);
 
         if(usuarioExistente === null){
@@ -84,23 +86,18 @@ class RedeSocial{
             const novoUsuario = new Usuario(nome, email, senha);
             RedeSocial.listaUsuarios.push(novoUsuario);
             console.log(`Bem vindo(a), ${novoUsuario.nome}!`);
-            return{
-                sucess : true,
-                usuario : novoUsuario
-            };
+            return novoUsuario;
         }
 
         console.log('Já existe uma conta cadastrada com esse e-mail. Clique em "Logar" para prosseguir.');
-        return{
-            sucess : false,
-            usuario : null
-        };
+        return null;
     }
 
     #fazerLogin(){
         const email = readline.question("Digite seu email: ");
         let usuarioEncontrado = null;
         let iCont;
+        let result;
 
         for(iCont = 0; iCont < RedeSocial.listaUsuarios.length && usuarioEncontrado ===  null; iCont++)
             if(RedeSocial.listaUsuarios[iCont].email === email)
@@ -110,25 +107,48 @@ class RedeSocial{
             const senha = readline.question("Digite uma senha: ");
             const resultado = usuarioEncontrado.fazerLogin(email, senha);
             console.log(resultado.message);
-            return{
-                sucess : resultado.sucess,
-                usuario : usuarioEncontrado
-            };
+            return usuarioEncontrado;
         }
 
         console.log('Nenhuma pessoa com esse e-mail foi encontrada. Clique em  "Criar conta".');
-        return{
-            sucess : false,
-            usuario : null
-        };
+        return null;
     }
 
     #adicionarAmigo(usuario){
         const nome = readline.question("Digite o nome do amigo: ");        
         let usuarioEncontrado = this.#procurarUsuario("nome", nome);
         if(usuarioEncontrado !== null)
-            usuario.adicionarAmigo(usuarioEncontrado);
+            return usuario.adicionarAmigo(usuarioEncontrado.id);
+        return 'Nenhuma pessoa com esse nome foi encontrada.';
+    }
 
+    #removerAmigo(usuario){
+        const nome = readline.question("Digite o nome do amigo: ");        
+        let usuarioEncontrado = this.#procurarUsuario("nome", nome);
+        if(usuarioEncontrado !== null)
+            return usuario.removerAmigo(usuarioEncontrado.id);
+
+        return 'Nenhuma pessoa com esse nome foi encontrada.';
+    }
+
+    #seguirPessoa(){
+        const nome = readline.question("Digite o nome da pessoa que deseja seguir: ");        
+        let usuarioEncontrado = this.#procurarUsuario("nome", nome);
+        if(usuarioEncontrado !== null){
+            usuarioEncontrado.alterarSeguidores(1);
+            return `Agora você segue ${nome}!`;
+        }
+        return 'Nenhuma pessoa com esse nome foi encontrada.';
+    }
+
+    #trocarEmail(usuario){
+        const email = readline.question("Digite o novo email: ");
+        const emailExiste = this.#procurarUsuario("email",email);
+
+        if(emailExiste)
+            return "Já existe uma conta cadastrada com esse e-mail."
+
+        return usuario.trocarEmail(email);
     }
 }
 

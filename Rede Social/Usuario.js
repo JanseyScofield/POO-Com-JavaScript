@@ -46,31 +46,30 @@ class Usuario{
         return result;
     }
 
-    mostarDados(){
+    mostrarDados(){
         console.log('------------------');
         console.log(`Nome: ${this.#nome}\nE-mail: ${this.#email}\n${this.#seguidores} seguidores    ${this.#amigos.length} amigos`)
     }
 
-    adicionarAmigo(amigo){
-        if(this.#amigos.includes(amigo))
-            return `Você já tem ${amigo.nome} na sua lista de amizades.`;
+    adicionarAmigo(amigoID){
+        if(this.#amigos.includes(amigoID))
+            return `Você já tem esse amigo na sua lista de amizades.`;
 
-        this.#amigos.push(amigo);
-        return `${amigo.nome} foi adicionado a sua lista de amizades!`;
+        this.#amigos.push(amigoID);
+        return `Adicionado a sua lista de amizades!`;
     }
 
-    removerAmigo(exAmigo){
-        if(!this.#amigos.includes(exAmigo))
-            return `Você não tem ${exAmigo.nome} na sua lista de amizades.`;
+    removerAmigo(exAmigoId){
+        if(!this.#amigos.includes(exAmigoId))
+            return `Você não tem esse amigo na sua lista de amizades.`;
 
-        const indexAmigo = this.#amigos.indexOf(exAmigo);
+        const indexAmigo = this.#amigos.indexOf(exAmigoId);
         this.#amigos.splice(indexAmigo, 1);
-        return `${exAmigo.nome} foi removido a sua lista de amizades!`;
+        return `Removido a sua lista de amizades!`;
     }
 
     alterarSeguidores(qtdSeguidores){
         this.#seguidores += qtdSeguidores;
-        return `Quantidade de seguidores: ${this.#seguidores}`;
     }
 
     trocarEmail(novoEmail){
